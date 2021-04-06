@@ -11,8 +11,10 @@ mongoose.connect('mongodb+srv://ggboots:HackMeMate@tua.mzh9z.mongodb.net/MSA_Dat
  .then((results) => console.log('Database Connected'))
  .catch((err) => console.log(err));
 
-require("./Customer");
-const Customer = mongoose.model("Customer");
+
+require("./customerDetails") //name of file
+const CustomerModel = mongoose.model("Customer")
+
 
 app.post("/Customer", (req, res) => {
     var newCustomer = {
@@ -21,7 +23,7 @@ app.post("/Customer", (req, res) => {
         address: req.body.address
     }
 
-    var customer = new Customer(newCustomer)
+    var customer = new CustomerModel(newCustomer)
 
     customer.save().then(() => {
         res.send("Customer Created")
@@ -29,12 +31,17 @@ app.post("/Customer", (req, res) => {
         if(err) {
             throw err;
         }
+        
     })
+    res.send("Details Recieved")
 })
 
+
+//Request to browser
+//Search up entire database for customer
 app.get("/customers", (req, res) => {
-    Customer.find().then((customers) => {
-        res.json(customers)
+    Customer.find().then((customer) => {
+        res.json(customer)
     }).catch((err) => {
         if(err){
             throw err;
@@ -42,6 +49,7 @@ app.get("/customers", (req, res) => {
     })
 })
 
+//search specific customer in database
 app.get("/customer/:id", (req, res) => {
     customer.findById(req.params.id).then((customer) => {
         if(customer){
@@ -56,6 +64,7 @@ app.get("/customer/:id", (req, res) => {
         })
 })
 
+//delete specified customers from database
 app.delete("/customer/:id", (req, res) => {
     Customer.findByIdAndRemove(req.params.id).then(() => {
         res.send("Customer Deleted")
